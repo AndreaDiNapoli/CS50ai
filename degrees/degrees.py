@@ -91,6 +91,8 @@ def shortest_path(source, target):
 
     If no possible path, returns None.
     """
+    # ! Solution ispired by the lesson code
+
     # Keep track of number of states explored
     num_explored = 0
 
@@ -115,11 +117,12 @@ def shortest_path(source, target):
         # Mark node as explored
         explored.add(node.state)
 
-        # Add neighbors to frontier while checking for solution
+        # Add neighbors to frontier while checking for solution (as the project instruction suggest)
         for action, state in neighbors_for_person(node.state):
             if not frontier.contains_state(state) and state not in explored:
                 child = Node(state=state, parent=node, action=action)
                 if child.state == target:
+                    # Build and return the "path" as solution
                     path = []
                     node = child
                     while node.parent is not None:
@@ -128,7 +131,6 @@ def shortest_path(source, target):
                     path.reverse()
                     return path
                 frontier.add(child)
-
 
 def person_id_for_name(name):
     """
