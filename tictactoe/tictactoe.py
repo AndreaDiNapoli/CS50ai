@@ -48,8 +48,8 @@ def player(board):
     X_count = 0
     O_count = 0
     # Loop through the board and count X and O
-    for i in board:
-        for j in i:
+    for i in range(2):
+        for j in range(2):
             if board[i][j]== X:
                 X_count+=1
             elif board[i][j]== O:
@@ -65,10 +65,10 @@ def actions(board):
     """
     Returns set of all possible actions (i, j) available on the board.
     """
-    actions_set = {}
+    actions_set = set()
     # Loop through the board and look for EMPTY spaces
-    for i in board:
-        for j in i:
+    for i in range(2):
+        for j in range(2):
             if board[i][j]== EMPTY:
                 actions_set.add((i,j))
     # Return a set of all possible actions available
@@ -86,10 +86,10 @@ def result(board, action):
     current_player = player(board)
 
     # Loop through the board_copy and add the action
-    for i in board:
-        for j in i:
+    for i in range(2):
+        for j in range(2):
             if (j,i) == action:
-                if (j,i) == EMPTY:
+                if board_copy[i][j] == EMPTY:
                     board_copy[i][j] = current_player
                 else:
                     raise Exception("A move in {} is not possible".format(board_copy[i][j]))
@@ -130,8 +130,8 @@ def terminal(board):
     """
     # Check if some move are available. If no, the game must be over so return True
     move_available = 0
-    for i in board:
-        for j in board:
+    for i in range(2):
+        for j in range(2):
             if board[i][j] == EMPTY:
                 move_available += 1
     if move_available == 0:
