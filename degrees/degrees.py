@@ -1,7 +1,7 @@
 import csv
 import sys
 
-from util import Node, StackFrontier, QueueFrontier
+from util import Node, QueueFrontier
 
 # Maps names to a set of corresponding person_ids
 names = {}
@@ -91,7 +91,7 @@ def shortest_path(source, target):
 
     If no possible path, returns None.
     """
-    # ! Solution ispired by the lesson code
+    # ! Solution inspired by the lesson code
 
     # Keep track of number of states explored
     num_explored = 0
@@ -131,6 +131,7 @@ def shortest_path(source, target):
                     path.reverse()
                     return path
                 frontier.add(child)
+
 
 def person_id_for_name(name):
     """
