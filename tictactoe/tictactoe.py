@@ -18,6 +18,27 @@ def initial_state():
             [EMPTY, EMPTY, EMPTY],
             [EMPTY, EMPTY, EMPTY]]
 
+def MaxValue(board):
+    v = -math.inf
+    if terminal(board) == True:
+        return utility(board)
+    
+    # Find all the possible actions
+    possible_actions = actions(board)
+    for possible_action in possible_actions:
+        v = max(v, MinValue(result(board, possible_action)))
+        return v
+
+def MinValue(board):
+    v = math.inf
+    if terminal(board) == True:
+        return utility(board)
+    
+    # Find all the possible actions
+    possible_actions = actions(board)
+    for possible_action in possible_actions:
+        v = min(v, MaxValue(result(board, possible_action)))
+        return v
 
 def player(board):
     """
@@ -146,31 +167,22 @@ def minimax(board):
     # Find who the turn is
     current_player = player(board)
     
+    # Find all the possible actions
+    possible_actions = actions(board)
+
+    # Find the best action and return it
+    best_action = ()
+    
     if current_player == X:
-        d
+        v = -math.inf
+        for possible_action in possible_actions:
+            if MinValue(result(board,possible_action)) > v:
+                best_action = possible_action
+        return best_action
 
     elif current_player == O:
-
-
-
-def MaxValue(board):
-    v = -math.inf
-    if terminal(board) == True:
-        return utility(board)
-    
-    # Find all the possible actions
-    possible_actions = actions(board)
-    for possible_action in possible_actions:
-        v = max(v, MinValue(result(board, possible_action)))
-        return v
-
-def MinValue(board):
-    v = math.inf
-    if terminal(board) == True:
-        return utility(board)
-    
-    # Find all the possible actions
-    possible_actions = actions(board)
-    for possible_action in possible_actions:
-        v = min(v, MaxValue(result(board, possible_action)))
-        return v
+        v = math.inf
+        for possible_action in possible_actions:
+            if MinValue(result(board,possible_action)) < v:
+                best_action = possible_action
+        return best_action
