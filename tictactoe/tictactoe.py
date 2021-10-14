@@ -95,8 +95,8 @@ def winner(board):
     # Check for vertical tris combination
     elif ((board[0][0] != EMPTY) and (board[0][0] == board[1][0]) and (board[1][0] == board[2][0])):
         return board[0][0]
-    elif ((board[1][0] != EMPTY) and (board[1][0] == board[1][1]) and (board[1][1] == board[1][2])):
-        return board[1][0]
+    elif ((board[0][1] != EMPTY) and (board[0][1] == board[1][1]) and (board[1][1] == board[2][1])):
+        return board[0][1]
     elif ((board[2][0] != EMPTY) and (board[2][0] == board[2][1]) and (board[2][1] == board[2][2])):
         return board[2][0]
     # If no winner comibation is met, return None
@@ -108,14 +108,9 @@ def terminal(board):
     Returns True if game is over, False otherwise.
     """
     # Check if some move are available. If no, the game must be over so return True
-    move_available = 0
-    for i in range(3):
-        for j in range(3):
-            if board[i][j] == EMPTY:
-                move_available += 1
-    if move_available == 0:
+    if not actions(board):
         return True
-    elif winner(board) is not None:
+    elif winner(board) != None:
         return True
     else:
         return False
@@ -140,7 +135,7 @@ def minimax(board):
     """
 
     # Find if the game is still on
-    if terminal(board) == True:
+    if terminal(board):
         return None
 
     # Find who the turn is
@@ -173,7 +168,7 @@ def minimaxValue(board):
     Return best value for each board, using recursive minimaxValue
     """
     # If the game is finished, return True
-    if terminal(board) == True:
+    if terminal(board):
         return utility(board) 
 
     # Look for who the current player is   
@@ -191,9 +186,9 @@ def minimaxValue(board):
     # Find the best value
     for possible_action in possible_actions:
         if current_player == X:
-            v = min(v, minimaxValue(result(board, possible_action)))
-        else:
             v = max(v, minimaxValue(result(board, possible_action)))
+        else:
+            v = min(v, minimaxValue(result(board, possible_action)))
     return v
 
 
