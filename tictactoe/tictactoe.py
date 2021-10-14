@@ -18,27 +18,6 @@ def initial_state():
             [EMPTY, EMPTY, EMPTY],
             [EMPTY, EMPTY, EMPTY]]
 
-def MaxValue(board):
-    v = -math.inf
-    if terminal(board) == True:
-        return utility(board)
-    
-    # Find all the possible actions
-    possible_actions = actions(board)
-    for possible_action in possible_actions:
-        v = max(v, MinValue(result(board, possible_action)))
-        return v
-
-def MinValue(board):
-    v = math.inf
-    if terminal(board) == True:
-        return utility(board)
-    
-    # Find all the possible actions
-    possible_actions = actions(board)
-    for possible_action in possible_actions:
-        v = min(v, MaxValue(result(board, possible_action)))
-        return v
 
 def player(board):
     """
@@ -174,17 +153,75 @@ def minimax(board):
     best_action = ()
     
     if current_player == X:
-        v = -math.inf
+        value = -math.inf
         for possible_action in possible_actions:
-            if MinValue(result(board,possible_action)) > v:
-                v = MinValue(result(board,possible_action))
+            if minimaxValue(result(board,possible_action)) > value:
+                value = minimaxValue(result(board,possible_action))
                 best_action = possible_action
         return best_action
 
     elif current_player == O:
-        v = math.inf
+        value = math.inf
         for possible_action in possible_actions:
-            if MaxValue(result(board,possible_action)) < v:
-                v = MaxValue(result(board,possible_action))
+            if minimaxValue(result(board,possible_action)) < value:
+                value = minimaxValue(result(board,possible_action))
                 best_action = possible_action
         return best_action
+
+def minimaxValue(board):
+    """
+    Return best value for each board, using recursive minimaxValue
+    """
+    # If the game is finished, return True
+    if terminal(board) == True:
+        return utility(board) 
+
+    # Look for who the current player is   
+    current_player = player(board)
+
+    # Find all the possible actions
+    possible_actions = actions(board)
+
+    # Set the base value to infinite (positive or negative)
+    if current_player == X:
+        v = -math.inf
+    else:
+        v = math.inf
+    
+    # Find the best value
+    for possible_action in possible_actions:
+        if current_player == X:
+            v = min(v, minimaxValue(result(board, possible_action)))
+        else:
+            v = max(v, minimaxValue(result(board, possible_action)))
+    return v
+
+
+    
+
+""" # Deprecated function, kept as archive
+def MaxValue(board):
+
+    v = -math.inf
+    if terminal(board) == True:
+        return utility(board)
+    
+    # Find all the possible actions
+    possible_actions = actions(board)
+    # Find the max value
+    for possible_action in possible_actions:
+        v = max(v, MinValue(result(board, possible_action)))
+    return v
+
+def MinValue(board):
+
+    v = math.inf
+    if terminal(board) == True:
+        return utility(board)
+    
+    # Find all the possible actions
+    possible_actions = actions(board)
+    # Find the min value
+    for possible_action in possible_actions:
+        v = min(v, MaxValue(result(board, possible_action)))
+    return v """
