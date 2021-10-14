@@ -91,9 +91,9 @@ def result(board, action):
             if (j,i) == action:
                 if board_copy[i][j] == EMPTY:
                     board_copy[i][j] = current_player
+                    return board_copy
                 else:
-                    raise Exception("A move in {} is not possible".format(board_copy[i][j]))
-    return board_copy
+                    raise Exception("A move in " + str(i) + " " + str(j) + " is not possible")
 
 
 def winner(board):
