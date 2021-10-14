@@ -48,8 +48,8 @@ def player(board):
     X_count = 0
     O_count = 0
     # Loop through the board and count X and O
-    for i in range(2):
-        for j in range(2):
+    for i in range(3):
+        for j in range(3):
             if board[i][j]== X:
                 X_count+=1
             elif board[i][j]== O:
@@ -67,8 +67,8 @@ def actions(board):
     """
     actions_set = set()
     # Loop through the board and look for EMPTY spaces
-    for i in range(2):
-        for j in range(2):
+    for i in range(3):
+        for j in range(3):
             if board[i][j]== EMPTY:
                 actions_set.add((i,j))
     # Return a set of all possible actions available
@@ -86,9 +86,9 @@ def result(board, action):
     current_player = player(board)
 
     # Loop through the board_copy and add the action
-    for i in range(2):
-        for j in range(2):
-            if (j,i) == action:
+    for i in range(3):
+        for j in range(3):
+            if (i,j) == action:
                 if board_copy[i][j] == EMPTY:
                     board_copy[i][j] = current_player
                     return board_copy
@@ -130,13 +130,13 @@ def terminal(board):
     """
     # Check if some move are available. If no, the game must be over so return True
     move_available = 0
-    for i in range(2):
-        for j in range(2):
+    for i in range(3):
+        for j in range(3):
             if board[i][j] == EMPTY:
                 move_available += 1
     if move_available == 0:
         return True
-    elif winner(board) != None:
+    elif winner(board) is not None:
         return True
     else:
         return False
@@ -177,12 +177,14 @@ def minimax(board):
         v = -math.inf
         for possible_action in possible_actions:
             if MinValue(result(board,possible_action)) > v:
+                v = MinValue(result(board,possible_action))
                 best_action = possible_action
         return best_action
 
     elif current_player == O:
         v = math.inf
         for possible_action in possible_actions:
-            if MinValue(result(board,possible_action)) < v:
+            if MaxValue(result(board,possible_action)) < v:
+                v = MaxValue(result(board,possible_action))
                 best_action = possible_action
         return best_action
