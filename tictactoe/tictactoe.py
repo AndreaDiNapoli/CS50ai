@@ -201,7 +201,7 @@ def minimaxValue(board, best_value):
                 return tmp_value
             v = max(v, tmp_value)
 
-        elif current_player == 0:
+        elif current_player == O:
             if tmp_value < best_value:
                 return tmp_value
             v = min(v, tmp_value)
