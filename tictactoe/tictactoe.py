@@ -131,7 +131,9 @@ def utility(board):
 
 def minimax(board):
     """
-    Returns the optimal action for the current player on the board.
+    Returns the optimal action for the current player on the board. 
+    (with Alpha-Beta Pruning and cleanup of some repetition, see the archive below for the old version)
+    (now the best value at that moment is passed to subsequential analysis to allow comparison and skipping of useless elaboration)
     """
 
     # Find if the game is still on
@@ -153,26 +155,27 @@ def minimax(board):
     best_action = ()
     
     if current_player == X:
-        value = -math.inf
+        best_value = -math.inf
         for possible_action in possible_actions:
-            tmp_value = minimaxValue(result(board,possible_action)) 
-            if tmp_value > value:
-                value = tmp_value
+            tmp_value = minimaxValue(result(board,possible_action), best_value)
+            if  tmp_value > best_value:
+                best_value = tmp_value
                 best_action = possible_action
         return best_action
 
     elif current_player == O:
-        value = math.inf
+        best_value = math.inf
         for possible_action in possible_actions:
-            tmp_value = minimaxValue(result(board,possible_action))
-            if  tmp_value < value:
-                value = tmp_value
+            tmp_value = minimaxValue(result(board,possible_action), best_value)
+            if  tmp_value < best_value:
+                best_value = tmp_value
                 best_action = possible_action
         return best_action
 
-def minimaxValue(board):
+def minimaxValue(board, best_value):
     """
-    Return best value for each board, using recursive minimaxValue
+    Return best value for each board, using recursive minimaxValue.
+    (Added best_value input for comparison and AB Pruning)
     """
     # If the game is finished, return True
     if terminal(board):
@@ -192,17 +195,27 @@ def minimaxValue(board):
     
     # Find the best value
     for possible_action in possible_actions:
-        tmp_value = minimaxValue(result(board, possible_action))
+
+        tmp_value = minimaxValue(result(board, possible_action), v)
+        
         if current_player == X:
+            if tmp_value > best_value:
+                return tmp_value
             v = max(v, tmp_value)
+
         elif current_player == O:
+            if tmp_value < best_value:
+                return tmp_value
             v = min(v, tmp_value)
     return v
 
 
     
 
-""" # Deprecated function, kept as archive
+""" 
+# !!! Deprecated function, kept as archive !!!
+
+# Min and Max Value function, now integrated
 def MaxValue(board):
 
     v = -math.inf
@@ -227,4 +240,70 @@ def MinValue(board):
     # Find the min value
     for possible_action in possible_actions:
         v = min(v, MaxValue(result(board, possible_action)))
-    return v """
+    return v 
+
+
+# Old minimax and minimaxValue function, without Alpha-Beta pruning
+def minimax(board):
+
+    # Find if the game is still on
+    if terminal(board):
+        return None
+    
+    # Hardcoding the first move
+    # As the XKCD map of optimal move suggest, there is only one optimal first move in tictactoe, so by hardcoding that you can skip the AI processing (first move is the hardest to compute)
+    if board == initial_state():
+        return (0,0)
+
+    # Find who the turn is
+    current_player = player(board)
+    
+    # Find all the possible actions
+    possible_actions = actions(board)
+
+    # Find the best action and return it
+    best_action = ()
+    
+    if current_player == X:
+        value = -math.inf
+        for possible_action in possible_actions:
+            if minimaxValue(result(board,possible_action)) > value:
+                value = minimaxValue(result(board,possible_action))
+                best_action = possible_action
+        return best_action
+
+    elif current_player == O:
+        value = math.inf
+        for possible_action in possible_actions:
+            if minimaxValue(result(board,possible_action)) < value:
+                value = minimaxValue(result(board,possible_action))
+                best_action = possible_action
+        return best_action
+
+def minimaxValue(board):
+
+    # If the game is finished, return True
+    if terminal(board):
+        return utility(board) 
+
+    # Look for who the current player is   
+    current_player = player(board)
+
+    # Find all the possible actions
+    possible_actions = actions(board)
+
+    # Set the base value to infinite (positive or negative)
+    if current_player == X:
+        v = -math.inf
+    else:
+        v = math.inf
+    
+    # Find the best value
+    for possible_action in possible_actions:
+        if current_player == X:
+            v = max(v, minimaxValue(result(board, possible_action)))
+        else:
+            v = min(v, minimaxValue(result(board, possible_action)))
+    return v
+
+"""
