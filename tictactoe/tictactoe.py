@@ -141,7 +141,7 @@ def minimax(board):
     # Hardcoding the first move
     # As the XKCD map of optimal move suggest, there is only one optimal first move in tictactoe, so by hardcoding that you can skip the AI processing (first move is the hardest to compute)
     if board == initial_state():
-        return (0,1)
+        return (0,0)
 
     # Find who the turn is
     current_player = player(board)
