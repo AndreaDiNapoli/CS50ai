@@ -133,6 +133,7 @@ def minimax(board):
     """
     Returns the optimal action for the current player on the board. 
     (with Alpha-Beta Pruning and cleanup of some repetition, see the archive below for the old version)
+    (now the best value at that moment is passed to subsequential analysis to allow comparison and skipping of useless elaboration)
     """
 
     # Find if the game is still on
@@ -174,6 +175,7 @@ def minimax(board):
 def minimaxValue(board, best_value):
     """
     Return best value for each board, using recursive minimaxValue.
+    (Added best_value input for comparison and AB Pruning)
     """
     # If the game is finished, return True
     if terminal(board):
