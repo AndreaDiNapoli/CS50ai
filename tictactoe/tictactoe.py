@@ -137,6 +137,11 @@ def minimax(board):
     # Find if the game is still on
     if terminal(board):
         return None
+    
+    # Hardcoding the first move
+    # As the XKCD map of optimal move suggest, there is only one optimal first move in tictactoe, so by hardcoding that you can skip the AI processing (first move is the hardest to compute)
+    if board == initial_state():
+        return (0,0)
 
     # Find who the turn is
     current_player = player(board)
@@ -150,16 +155,18 @@ def minimax(board):
     if current_player == X:
         value = -math.inf
         for possible_action in possible_actions:
-            if minimaxValue(result(board,possible_action)) > value:
-                value = minimaxValue(result(board,possible_action))
+            tmp_value = minimaxValue(result(board,possible_action)) 
+            if tmp_value > value:
+                value = tmp_value
                 best_action = possible_action
         return best_action
 
     elif current_player == O:
         value = math.inf
         for possible_action in possible_actions:
-            if minimaxValue(result(board,possible_action)) < value:
-                value = minimaxValue(result(board,possible_action))
+            tmp_value = minimaxValue(result(board,possible_action))
+            if  tmp_value < value:
+                value = tmp_value
                 best_action = possible_action
         return best_action
 
@@ -185,10 +192,11 @@ def minimaxValue(board):
     
     # Find the best value
     for possible_action in possible_actions:
+        tmp_value = minimaxValue(result(board, possible_action))
         if current_player == X:
-            v = max(v, minimaxValue(result(board, possible_action)))
-        else:
-            v = min(v, minimaxValue(result(board, possible_action)))
+            v = max(v, tmp_value)
+        elif current_player == O:
+            v = min(v, tmp_value)
     return v
 
 
