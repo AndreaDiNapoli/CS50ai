@@ -97,8 +97,8 @@ def winner(board):
         return board[0][0]
     elif ((board[0][1] != EMPTY) and (board[0][1] == board[1][1]) and (board[1][1] == board[2][1])):
         return board[0][1]
-    elif ((board[2][0] != EMPTY) and (board[2][0] == board[2][1]) and (board[2][1] == board[2][2])):
-        return board[2][0]
+    elif ((board[0][2] != EMPTY) and (board[0][2] == board[1][2]) and (board[1][2] == board[2][2])):
+        return board[0][2]
     # If no winner comibation is met, return None
     else:
         return None
