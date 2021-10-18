@@ -1,7 +1,6 @@
 import itertools
 import random
 
-
 class Minesweeper():
     """
     Minesweeper game representation
@@ -105,27 +104,48 @@ class Sentence():
         """
         Returns the set of all cells in self.cells known to be mines.
         """
-        raise NotImplementedError
+        # If the count is equal to the number of cells in the set, that means that every cell in the set is a mine
+        if len(self.cells) == self.count:
+            return self.cells
+        else:
+            return None
 
     def known_safes(self):
         """
         Returns the set of all cells in self.cells known to be safe.
         """
-        raise NotImplementedError
-
+        # If the count is zero, that means that every cell in the set is safe
+        if self.count == 0:
+            return self.cells
+        else:
+            return None
+        
     def mark_mine(self, cell):
         """
         Updates internal knowledge representation given the fact that
         a cell is known to be a mine.
         """
-        raise NotImplementedError
+        # Check if the cell is in the set
+        if cell in self.cells:
+            # Remove the cell from the set and remove 1 from the minecount to mantain the sentence logic true
+            self.cells.remove(cell)
+            self.count -= 1
+            return
+        else:
+            return
 
     def mark_safe(self, cell):
         """
         Updates internal knowledge representation given the fact that
         a cell is known to be safe.
         """
-        raise NotImplementedError
+        # Check if the cell is in the set        
+        if cell in self.cells:
+            # Remove the cell from the set (the logic is not compromised)
+            self.cells.remove(cell)
+            return
+        else:
+            return
 
 
 class MinesweeperAI():
@@ -166,6 +186,42 @@ class MinesweeperAI():
         self.safes.add(cell)
         for sentence in self.knowledge:
             sentence.mark_safe(cell)
+    
+    def check_inference(self):
+        """
+        Iterate through the KB and elaborate any possible inference
+        """
+        # Set a counter
+        update_count = 0
+
+        # Iterate through every sentences in the KB
+        for sentence in self.knowledge:
+            mine_set = sentence.known_mines()
+            # Check if is infered a new mine cell. If so, add 1 to the counter, mark the cells as mines and update the knowledge
+            if mine_set != None:
+                update_count += 1
+                for mine in mine_set:
+                    sentence.mark_mine(mine)
+                    for sentence in self.knowledge:
+                        sentence.mark_mine(mine)
+
+            safe_set = sentence.known_safes()
+            if safe_set != None:
+            # Check if is infered a new safe cell. If so, add 1 to the counter, mark the cells as safes and update the knowledge
+                update_count += 1
+                for safe in safe_set:
+                    sentence.mark_safe(safe)
+                    for sentence in self.knowledge:
+                        sentence.mark_safe(safe)
+
+        # Check if we made some new inference. 
+        # If so, re-run the check_inference function to see if some new inference is now possible. 
+        # Otherwise, break the loop and return (we can't discover anything new for now).
+        if update_count != 0:
+            self.check_inference()
+        else:
+            return
+        
 
     def add_knowledge(self, cell, count):
         """
@@ -182,7 +238,36 @@ class MinesweeperAI():
             5) add any new sentences to the AI's knowledge base
                if they can be inferred from existing knowledge
         """
-        raise NotImplementedError
+        # 1) Mark the cell as a move that has been made
+        self.moves_made.add(cell)
+
+        # 2) Mark the cell as safe
+        self.mark_safe(cell)
+        for sentence in self.knowledge:
+            sentence.mark_safe(cell)
+        
+        # 3) Add a new sentence to the AI's knowledge base based on the value of `cell` and `count`
+        # Create blank sentence and set the count
+        tmp = Sentence({}, count)
+        # Loop over all cells within one row and column
+        for i in range(cell[0] - 1, cell[0] + 2):
+            for j in range(cell[1] - 1, cell[1] + 2):
+
+                # Ignore the cell itself
+                if (i, j) == cell:
+                    continue
+
+                # Add cell to the nearby list if cell in bounds and it is not undetermined
+                if 0 <= i < self.height and 0 <= j < self.width:
+                    if (i, j) not in self.safes and (i, j) not in self.mines:
+                        tmp.cells.add((i, j))
+
+        # Add the sentence to the knowledge
+        self.knowledge.append(tmp)
+
+        # 4) Mark any additional cells as safe or as mines if it can be concluded based on the AI's knowledge base
+        # 5) add any new sentences to the AI's knowledge base if they can be inferred from existing knowledge 
+        self.check_inference()
 
     def make_safe_move(self):
         """
@@ -193,7 +278,14 @@ class MinesweeperAI():
         This function may use the knowledge in self.mines, self.safes
         and self.moves_made, but should not modify any of those values.
         """
-        raise NotImplementedError
+        # Loop for each cell in the board
+        for i in range(self.height):
+            for j in range(self.width):
+                # Check if the cell is a viable move and if it is a known safe cell. If true, return the "move"
+                if (i, j) not in self.safes and (i, j) in self.safes:
+                    return (i, j)
+        else:
+            return None
 
     def make_random_move(self):
         """
@@ -202,4 +294,19 @@ class MinesweeperAI():
             1) have not already been chosen, and
             2) are not known to be mines
         """
-        raise NotImplementedError
+        # Create a list element for possible moves
+        possible_move = []
+        # Loop for each cell in the board
+        for i in range(self.height):
+            for j in range(self.width):
+                # Check if the cell is a viable move and if it is not a know mines. If true, add it to the list of possible_moves
+                if (i, j) not in self.safes and (i, j) not in self.mines:
+                    possible_move.append((i, j))
+        
+        # Check if there is at least one possible_move available
+        if not possible_move:
+            return None
+        # Extract and return a random move from the possibles one
+        else:
+            sorted_move = random.choice(possible_move)
+            return sorted_move
