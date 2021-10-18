@@ -95,9 +95,9 @@ knowledge3 = And(
     ),
 
     # Encode the knowledge that if B is Knight, what he said it's true. Else, it's false. 
-    # B said: "And(Implication(AKnight, AKnight), Implication(AKnave, Not(AKnight)))"
-    Implication(BKnight, And(Implication(AKnight, AKnight), Implication(AKnave, Not(AKnight)))),
-    Implication(BKnave, Not(And(Implication(AKnight, AKnight), Implication(AKnave, Not(AKnight))))),
+    # B said: "And(Implication(AKnight, AKnave), Implication(AKnave, Not(AKnave)))"
+    Implication(BKnight, And(Implication(AKnight, AKnave), Implication(AKnave, Not(AKnave)))),
+    Implication(BKnave, Not(And(Implication(AKnight, AKnave), Implication(AKnave, Not(AKnave))))),
     # B also said: "CKnave"
     Implication(BKnight, CKnave),
     Implication(BKnave, Not(CKnave)),
