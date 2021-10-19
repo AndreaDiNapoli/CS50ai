@@ -174,6 +174,7 @@ class MinesweeperAI():
         Marks a cell as a mine, and updates all knowledge
         to mark that cell as a mine as well.
         """
+        print("New mine: " + str(cell))
         self.mines.add(cell)
         for sentence in self.knowledge:
             sentence.mark_mine(cell)
@@ -183,6 +184,7 @@ class MinesweeperAI():
         Marks a cell as safe, and updates all knowledge
         to mark that cell as safe as well.
         """
+        print("New safe: " + str(cell))
         self.safes.add(cell)
         for sentence in self.knowledge:
             sentence.mark_safe(cell)
@@ -213,12 +215,10 @@ class MinesweeperAI():
 
         # Iterate over the new discovered mine and safe set and update the knowledge accordingly
         for mine in mine_set:
-            self.mines.add(mine)
-            sentence.mark_mine(mine)
+            self.mark_mine(mine)
 
         for safe in safe_set:
-            self.safes.add(safe)
-            sentence.mark_safe(safe)
+            self.mark_safe(safe)
 
         # Clean the blank sentences
         for sentence in self.knowledge:
@@ -253,9 +253,8 @@ class MinesweeperAI():
         self.moves_made.add(cell)
 
         # 2) Mark the cell as safe
-        self.mark_safe(cell)
-        for sentence in self.knowledge:
-            sentence.mark_safe(cell)
+        if cell not in self.safes:
+            self.mark_safe(cell)
         
         # 3) Add a new sentence to the AI's knowledge base based on the value of `cell` and `count`
         # Create blank sentence and set the count
@@ -272,7 +271,7 @@ class MinesweeperAI():
                 if 0 <= i < self.height and 0 <= j < self.width:
                     if (i, j) not in self.safes and (i, j) not in self.mines:
                         tmp.cells.add((i, j))
-
+        print("New sentence: " + str(tmp.cells) + " with count: " + str(tmp.count))
         # Add the sentence to the knowledge
         self.knowledge.append(tmp)
 
@@ -289,12 +288,15 @@ class MinesweeperAI():
         This function may use the knowledge in self.mines, self.safes
         and self.moves_made, but should not modify any of those values.
         """
+
         # Loop for each cell in the board
         for i in range(self.height):
             for j in range(self.width):
                 # Check if the cell is a viable move and if it is a known safe cell. If true, return the "move"
                 if (i, j) not in self.moves_made and (i, j) in self.safes:
+                    print("Safe Move made: " + str( (i,j) ) )
                     return (i, j)
+
         else:
             return None
 
