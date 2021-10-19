@@ -193,26 +193,37 @@ class MinesweeperAI():
         """
         # Set a counter
         update_count = 0
+        
+        mine_set = set()
+        safe_set = set()
 
         # Iterate through every sentences in the KB
         for sentence in self.knowledge:
-            mine_set = sentence.known_mines()
-            # Check if is infered a new mine cell. If so, add 1 to the counter, mark the cells as mines and update the knowledge
-            if mine_set != None:
+            # Check if is infered a new mine cell. If so, add 1 to the counter and save the mines cordinates into a new set
+            if sentence.known_mines() != None:
                 update_count += 1
-                for mine in mine_set:
-                    sentence.mark_mine(mine)
-                    for sentence in self.knowledge:
-                        sentence.mark_mine(mine)
+                for mine in sentence.known_mines():
+                    mine_set.add(mine)
+           
+            if sentence.known_safes() != None:
+            # Check if is infered a new safe cell. If so, add 1 to the counter and save the safes cordinates into a new set
+                update_count += 1
+                for safe in sentence.known_safes():
+                    safe_set.add(safe)
 
-            safe_set = sentence.known_safes()
-            if safe_set != None:
-            # Check if is infered a new safe cell. If so, add 1 to the counter, mark the cells as safes and update the knowledge
-                update_count += 1
-                for safe in safe_set:
-                    sentence.mark_safe(safe)
-                    for sentence in self.knowledge:
-                        sentence.mark_safe(safe)
+        # Iterate over the new discovered mine and safe set and update the knowledge accordingly
+        for mine in mine_set:
+            self.mines.add(mine)
+            sentence.mark_mine(mine)
+
+        for safe in safe_set:
+            self.safes.add(safe)
+            sentence.mark_safe(safe)
+
+        # Clean the blank sentences
+        for sentence in self.knowledge:
+            if len(sentence.cells) == 0 and sentence.count == 0:
+                self.knowledge.remove(sentence)
 
         # Check if we made some new inference. 
         # If so, re-run the check_inference function to see if some new inference is now possible. 
@@ -282,7 +293,7 @@ class MinesweeperAI():
         for i in range(self.height):
             for j in range(self.width):
                 # Check if the cell is a viable move and if it is a known safe cell. If true, return the "move"
-                if (i, j) not in self.safes and (i, j) in self.safes:
+                if (i, j) not in self.moves_made and (i, j) in self.safes:
                     return (i, j)
         else:
             return None
