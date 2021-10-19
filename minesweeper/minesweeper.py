@@ -174,7 +174,6 @@ class MinesweeperAI():
         Marks a cell as a mine, and updates all knowledge
         to mark that cell as a mine as well.
         """
-        print("New mine: " + str(cell))
         self.mines.add(cell)
         for sentence in self.knowledge:
             sentence.mark_mine(cell)
@@ -184,7 +183,6 @@ class MinesweeperAI():
         Marks a cell as safe, and updates all knowledge
         to mark that cell as safe as well.
         """
-        print("New safe: " + str(cell))
         self.safes.add(cell)
         for sentence in self.knowledge:
             sentence.mark_safe(cell)
@@ -269,9 +267,14 @@ class MinesweeperAI():
 
                 # Add cell to the nearby list if cell in bounds and it is not undetermined
                 if 0 <= i < self.height and 0 <= j < self.width:
-                    if (i, j) not in self.safes and (i, j) not in self.mines:
+                    # If we know the neighboard is a mine, there's no point into adding in sentence, 
+                    # but we have to substract 1 from the minecount to mantain true the sentence
+                    # This long comment commemorize the braveness of this bug, that resist through too many hours of my debugging <3
+                    if (i, j) in self.mines:
+                        tmp.count -= 1
+                    elif (i, j) not in self.safes and (i, j) not in self.mines:
                         tmp.cells.add((i, j))
-        print("New sentence: " + str(tmp.cells) + " with count: " + str(tmp.count))
+                        
         # Add the sentence to the knowledge
         self.knowledge.append(tmp)
 
@@ -294,7 +297,6 @@ class MinesweeperAI():
             for j in range(self.width):
                 # Check if the cell is a viable move and if it is a known safe cell. If true, return the "move"
                 if (i, j) not in self.moves_made and (i, j) in self.safes:
-                    print("Safe Move made: " + str( (i,j) ) )
                     return (i, j)
 
         else:
