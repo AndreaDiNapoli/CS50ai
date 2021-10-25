@@ -139,6 +139,87 @@ def joint_probability(people, one_gene, two_genes, have_trait):
         * everyone in set `have_trait` has the trait, and
         * everyone not in set` have_trait` does not have the trait.
     """
+    # Declare an empty list for storing the probabilities to "joint"
+    probabilities = []
+
+    # Create a set for people for which we need to compute "no_gene" condition and "no trait" condition
+    no_gene = {}
+    no_trait = {}
+    for person in people:
+        if person not in one_gene and person not in two_genes:
+            no_gene.add(person)
+        if person not in have_trait:
+            no_trait.add(person)
+
+    # Declare some constant to simplify readability of further calculations
+    # p for the gene mutating
+    mutation = PROBS["mutation"]
+    # p for the gene don't mutate
+    no_mutation = (1 - mutation)
+    # p for the current gene passing to son generation (0.5 - mutation)+(0 + mutation)
+    passed = 0.5
+
+    # Create a variable that store the probability distribution of all the combination of gene x parents genes
+    gene_prob_distr ={
+        # Probability for number of gene x combination of parents genes
+        "number_of_genes": {
+            0:{
+                "Unknown": PROBS["gene"][0],
+                "00": no_mutation * no_mutation,
+                "01": no_mutation * passed,
+                "10": passed * no_mutation,
+                "11": passed * passed,
+                "20": (mutation) * no_mutation, 
+                "02": no_mutation * (mutation), 
+                "21": (mutation) * passed,
+                "12": passed * (mutation),
+                "22": (mutation) * (mutation),
+            },
+            1: {
+                "Unknown": PROBS["gene"][1],
+                "00": (no_mutation * mutation) + (mutation * no_mutation),
+                "01": (no_mutation * passed) + (mutation * passed),
+                "10": (mutation * passed) + (no_mutation * passed),
+                "11": 2 * (passed * mutation),
+                "20": (no_mutation * no_mutation) + (mutation * mutation),
+                "02": (mutation * mutation) + (no_mutation * no_mutation),
+                "21": (no_mutation * passed) + (mutation * passed),
+                "12": (passed * mutation) + (passed * no_mutation),
+                "22": 2 * (mutation * no_mutation),
+            },
+            2: {
+                "Unknown": PROBS["gene"][2],
+                "00": mutation * mutation,
+                "01": mutation * passed,
+                "10": passed * mutation,
+                "11": passed * passed,
+                "20": no_mutation * mutation,
+                "02": mutation * no_mutation,
+                "21": no_mutation * passed,
+                "12": passed * no_mutation,
+                "22": no_mutation * no_mutation,
+            }
+        }
+    }
+
+    # Loop through every person and calculate the gene probability accordingly to the set in which is contained
+    for person in people:
+        # Calculate the p for one copy of the gene
+        if person in one_gene:
+            # When we have no information about the parents
+            if not person["mother"] and not person["father"]:
+                probabilities.add(gene_prob_distr)
+            if person["mother"]
+        # Calculate the p for two copies of the gene
+        # Calculate the p for no gene
+        raise NotImplementedError
+    
+    # Loop through every person and calculate the gene probability accordingly to the set in which is contained
+    for person in people:   
+        # Calculate the p for having the trait
+        # Calculate the p for not having the trait
+        raise NotImplementedError
+
     raise NotImplementedError
 
 
