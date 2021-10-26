@@ -155,7 +155,7 @@ def joint_probability(people, one_gene, two_genes, have_trait):
     gene_prob_distr ={
         # Probability for number of gene x combination of parents genes
         # You can refer to the probability as gene_prob_distr[number of genes][parents number of genes]
-        # Ex. probability to have 1 gene if one parent have 0 gene and the other one 2 is p = gene_prob_distr[One][02]
+        # Ex. probability to have 1 gene if one parent have 0 gene and the other one 2 is p = gene_prob_distr["1"][02]
             "0":{
                 "Unknown": PROBS["gene"][0],
                 "00": no_mutation * no_mutation,
@@ -173,7 +173,7 @@ def joint_probability(people, one_gene, two_genes, have_trait):
                 "00": (no_mutation * mutation) + (mutation * no_mutation),
                 "01": (no_mutation * passed) + (mutation * passed),
                 "10": (mutation * passed) + (no_mutation * passed),
-                "11": 2 * (passed * mutation),
+                "11": 2 * (passed * passed),
                 "20": (no_mutation * no_mutation) + (mutation * mutation),
                 "02": (mutation * mutation) + (no_mutation * no_mutation),
                 "21": (no_mutation * passed) + (mutation * passed),
@@ -196,6 +196,7 @@ def joint_probability(people, one_gene, two_genes, have_trait):
 
     # Loop through every person and calculate the gene probability accordingly to the set in which is contained
     for person in people:
+        # Declare a variable for "perone in people" to improve readability
         pinp = people[person]
 
         # Look for the number of genes needed

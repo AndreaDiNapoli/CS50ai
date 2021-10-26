@@ -12,9 +12,9 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "cwd": "${fileDirname}",
-            "args": [
-                "data/family0.csv"
-            ]
+            /* "args": [
+                "HERE-ARGUMENT"
+            ] */
         }
     ]
 }
