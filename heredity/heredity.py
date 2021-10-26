@@ -1,6 +1,7 @@
 import csv
 import itertools
 import sys
+from functools import reduce
 
 PROBS = {
 
@@ -142,15 +143,6 @@ def joint_probability(people, one_gene, two_genes, have_trait):
     # Declare an empty list for storing the probabilities to "joint"
     probabilities = []
 
-    # Create a set for people for which we need to compute "no_gene" condition and "no trait" condition
-    no_gene = {}
-    no_trait = {}
-    for person in people:
-        if person not in one_gene and person not in two_genes:
-            no_gene.add(person)
-        if person not in have_trait:
-            no_trait.add(person)
-
     # Declare some constant to simplify readability of further calculations
     # p for the gene mutating
     mutation = PROBS["mutation"]
@@ -162,7 +154,8 @@ def joint_probability(people, one_gene, two_genes, have_trait):
     # Create a variable that store the probability distribution of all the combination of gene x parents genes
     gene_prob_distr ={
         # Probability for number of gene x combination of parents genes
-        "number_of_genes": {
+        # You can refer to the probability as gene_prob_distr[number of genes][parents number of genes]
+        # Ex. probability to have 1 gene if one parent have 0 gene and the other one 2 is p = gene_prob_distr[One][02]
             0:{
                 "Unknown": PROBS["gene"][0],
                 "00": no_mutation * no_mutation,
@@ -198,29 +191,52 @@ def joint_probability(people, one_gene, two_genes, have_trait):
                 "21": no_mutation * passed,
                 "12": passed * no_mutation,
                 "22": no_mutation * no_mutation,
-            }
-        }
+            },
     }
 
     # Loop through every person and calculate the gene probability accordingly to the set in which is contained
     for person in people:
-        # Calculate the p for one copy of the gene
-        if person in one_gene:
-            # When we have no information about the parents
-            if not person["mother"] and not person["father"]:
-                probabilities.add(gene_prob_distr)
-            if person["mother"]
-        # Calculate the p for two copies of the gene
-        # Calculate the p for no gene
-        raise NotImplementedError
-    
-    # Loop through every person and calculate the gene probability accordingly to the set in which is contained
-    for person in people:   
-        # Calculate the p for having the trait
-        # Calculate the p for not having the trait
-        raise NotImplementedError
 
-    raise NotImplementedError
+        # Look for the number of genes needed
+        if person in one_gene:
+            n_gene= 1
+        elif person in two_genes:
+            n_gene = 2
+        else:
+            n_gene = 0
+        
+        # Look for the parents info
+        if not person["mother"] and not person["father"]:
+            parents_genes = "Unknown"
+        else:
+            if person["mother"] in one_gene:
+                m_gene = 1
+            elif person["mother"] in two_genes:
+                m_gene = 2
+            else:
+                m_gene = 0
+
+            if person["father"] in one_gene:
+                f_gene = 1
+            elif person["father"] in two_genes:
+                f_gene = 2
+            else:
+                f_gene = 0
+    
+            parents_genes = str(m_gene + f_gene)
+
+        # Calculate the probability and add it to the list
+        probabilities.append(gene_prob_distr[n_gene][parents_genes])
+
+        # Loop through every person and calculate the gene probability accordingly to the set in which is contained
+        # Since n_gene store info about the number of gene the person has and PROBS is built such as traits is encoded as True and False you can directly acces to such info
+        probabilities.append(PROBS["trait"][n_gene][person in have_trait])
+
+    # Calculate joint probability and return
+    # It could be done as a simple loop, but I've discovered functools so let's give it a try!
+    j_prob = 1 * reduce(lambda x,y : x*y, probabilities)
+
+    return j_prob
 
 
 def update(probabilities, one_gene, two_genes, have_trait, p):
