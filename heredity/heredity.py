@@ -156,7 +156,7 @@ def joint_probability(people, one_gene, two_genes, have_trait):
         # Probability for number of gene x combination of parents genes
         # You can refer to the probability as gene_prob_distr[number of genes][parents number of genes]
         # Ex. probability to have 1 gene if one parent have 0 gene and the other one 2 is p = gene_prob_distr[One][02]
-            0:{
+            "0":{
                 "Unknown": PROBS["gene"][0],
                 "00": no_mutation * no_mutation,
                 "01": no_mutation * passed,
@@ -168,7 +168,7 @@ def joint_probability(people, one_gene, two_genes, have_trait):
                 "12": passed * (mutation),
                 "22": (mutation) * (mutation),
             },
-            1: {
+            "1": {
                 "Unknown": PROBS["gene"][1],
                 "00": (no_mutation * mutation) + (mutation * no_mutation),
                 "01": (no_mutation * passed) + (mutation * passed),
@@ -180,7 +180,7 @@ def joint_probability(people, one_gene, two_genes, have_trait):
                 "12": (passed * mutation) + (passed * no_mutation),
                 "22": 2 * (mutation * no_mutation),
             },
-            2: {
+            "2": {
                 "Unknown": PROBS["gene"][2],
                 "00": mutation * mutation,
                 "01": mutation * passed,
@@ -196,6 +196,7 @@ def joint_probability(people, one_gene, two_genes, have_trait):
 
     # Loop through every person and calculate the gene probability accordingly to the set in which is contained
     for person in people:
+        pinp = people[person]
 
         # Look for the number of genes needed
         if person in one_gene:
@@ -206,27 +207,27 @@ def joint_probability(people, one_gene, two_genes, have_trait):
             n_gene = 0
         
         # Look for the parents info
-        if not person["mother"] and not person["father"]:
+        if not pinp["mother"] and not pinp["father"]:
             parents_genes = "Unknown"
         else:
-            if person["mother"] in one_gene:
+            if pinp["mother"] in one_gene:
                 m_gene = 1
-            elif person["mother"] in two_genes:
+            elif pinp["mother"] in two_genes:
                 m_gene = 2
             else:
                 m_gene = 0
 
-            if person["father"] in one_gene:
+            if pinp["father"] in one_gene:
                 f_gene = 1
-            elif person["father"] in two_genes:
+            elif pinp["father"] in two_genes:
                 f_gene = 2
             else:
                 f_gene = 0
     
-            parents_genes = str(m_gene + f_gene)
+            parents_genes = str(m_gene) + str(f_gene)
 
         # Calculate the probability and add it to the list
-        probabilities.append(gene_prob_distr[n_gene][parents_genes])
+        probabilities.append(gene_prob_distr[str(n_gene)][parents_genes])
 
         # Loop through every person and calculate the gene probability accordingly to the set in which is contained
         # Since n_gene store info about the number of gene the person has and PROBS is built such as traits is encoded as True and False you can directly acces to such info
@@ -257,7 +258,7 @@ def update(probabilities, one_gene, two_genes, have_trait, p):
             n_gene = 0
 
         # Update genes probability
-        probabilities[person]["genes"][n_gene] += p
+        probabilities[person]["gene"][n_gene] += p
 
         # update trait probability
         probabilities[person]["trait"][person in have_trait] += p
@@ -273,17 +274,17 @@ def normalize(probabilities):
     # Loop through each person in probabilities
     for person in probabilities:
         # Calculate the constant factor for genes probability
-        x = 1 / (person["genes"][0] + person["genes"][1] + person["genes"][2])
+        x = 1 / (probabilities[person]["gene"][0] + probabilities[person]["gene"][1] + probabilities[person]["gene"][2])
         # Normalize the values
-        person["genes"][0] *= x
-        person["genes"][1] *= x
-        person["genes"][2] *= x
+        probabilities[person]["gene"][0] *= x
+        probabilities[person]["gene"][1] *= x
+        probabilities[person]["gene"][2] *= x
 
         # Calculate the constat factor for trait probability
-        x = 1/ (person["trait"][True] + person["trait"][False])
+        x = 1/ (probabilities[person]["trait"][True] + probabilities[person]["trait"][False])
         # Normalize the values
-        person["trait"][True] *= x
-        person["trait"][False] *= x
+        probabilities[person]["trait"][True] *= x
+        probabilities[person]["trait"][False] *= x
 
     return
 
