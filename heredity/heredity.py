@@ -246,7 +246,23 @@ def update(probabilities, one_gene, two_genes, have_trait, p):
     Which value for each distribution is updated depends on whether
     the person is in `have_gene` and `have_trait`, respectively.
     """
-    raise NotImplementedError
+    # Loop through each person in probabilities
+    for person in probabilities:
+        # Look how many gene the person is supposed to have
+        if person in one_gene:
+            n_gene = 1
+        elif person in two_genes:
+            n_gene = 2
+        else:
+            n_gene = 0
+
+        # Update genes probability
+        probabilities[person]["genes"][n_gene] += p
+
+        # update trait probability
+        probabilities[person]["trait"][person in have_trait] += p
+    
+    return
 
 
 def normalize(probabilities):
@@ -254,7 +270,22 @@ def normalize(probabilities):
     Update `probabilities` such that each probability distribution
     is normalized (i.e., sums to 1, with relative proportions the same).
     """
-    raise NotImplementedError
+    # Loop through each person in probabilities
+    for person in probabilities:
+        # Calculate the constant factor for genes probability
+        x = 1 / (person["genes"][0] + person["genes"][1] + person["genes"][2])
+        # Normalize the values
+        person["genes"][0] *= x
+        person["genes"][1] *= x
+        person["genes"][2] *= x
+
+        # Calculate the constat factor for trait probability
+        x = 1/ (person["trait"][True] + person["trait"][False])
+        # Normalize the values
+        person["trait"][True] *= x
+        person["trait"][False] *= x
+
+    return
 
 
 if __name__ == "__main__":
