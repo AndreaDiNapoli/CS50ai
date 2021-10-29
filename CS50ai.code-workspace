@@ -15,7 +15,13 @@
 				"request": "launch",
 				"program": "${file}",
 				"console": "integratedTerminal",
-				"cwd": "${fileDirname}"
+				"cwd": "${fileDirname}",
+				"env": {"PYTHONPATH": "${workspaceRoot}"},
+				"python.analysis.extraPaths": [
+					"/Users/andrea/Documents/VStudio/CS50ai/crossword",
+					"/Users/andrea/Documents/VStudio/CS50ai/"
+					
+				]
 			}
 		]
 	}

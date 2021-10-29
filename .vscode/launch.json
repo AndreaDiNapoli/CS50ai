@@ -12,9 +12,11 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "cwd": "${fileDirname}",
-            /* "args": [
-                "HERE-ARGUMENT"
-            ] */
+            "env": {"PYTHONPATH": "${workspaceRoot}"},
+            "python.analysis.extraPaths": ["/Users/andrea/Documents/VStudio/CS50ai/crossword"],
+            "args": [
+                "data/structure0.txt", "data/words0.txt",
+            ]
         }
     ]
 }
