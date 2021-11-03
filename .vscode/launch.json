@@ -14,8 +14,8 @@
             "cwd": "${fileDirname}",
             "env": {"PYTHONPATH": "${workspaceRoot}"},
             "python.analysis.extraPaths": ["/Users/andrea/Documents/VStudio/CS50ai/crossword"],
-/*             "args": [
-                "data/structure0.txt", "data/words0.txt", */
+            "args": [
+                "shopping.py", "shopping.csv",
             ]
         }
     ]

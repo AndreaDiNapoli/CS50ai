@@ -1,4 +1,5 @@
 import csv
+from os import error
 import sys
 
 from sklearn.model_selection import train_test_split
@@ -30,6 +31,17 @@ def main():
     print(f"True Positive Rate: {100 * sensitivity:.2f}%")
     print(f"True Negative Rate: {100 * specificity:.2f}%")
 
+def monthToIndex(month):
+    """
+    Helper function that take a month abbreviation as input and return a number 0 to 11
+    Could not manage to make strptime work so why not make one myself?
+    """
+    monthlist = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+    for i in range(len(monthlist)):
+        if month == monthlist[i]:
+            return i
+    
+    raise TypeError("Error while converting month")
 
 def load_data(filename):
     """
@@ -59,7 +71,41 @@ def load_data(filename):
     labels should be the corresponding list of labels, where each label
     is 1 if Revenue is true, and 0 otherwise.
     """
-    raise NotImplementedError
+    with open(filename) as f:
+        reader = csv.reader(f)
+        next(reader)
+
+        evidence = []
+        label = []
+
+        for row in reader:
+
+            # Add a list of evidence
+            evidence.append([
+                    int(row[0]),                                    # Administrative
+                    float(row[1]),                                  # Administrative_Duration
+                    int(row[2]),                                    # Informational
+                    float(row[3]),                                  # Informational_duration
+                    int(row[4]),                                    # ProductRelated
+                    float(row[5]),                                  # ProductRelated_Duration
+                    float(row[6]),                                  # BounceRates
+                    float(row[7]),                                  # ExitRates
+                    float(row[8]),                                  # PageValues
+                    float(row[9]),                                  # SpecialDay
+                    monthToIndex(row[10]),                          # Month
+                    int(row[11]),                                   # OperatingSystem
+                    int(row[12]),                                   # Browser
+                    int(row[13]),                                   # Region
+                    int(row[14]),                                   # TrafficType
+                    1 if row[15] == "Returning_Visitor" else 0,     # VisitorType
+                    1 if row[16] == "TRUE" else 0                   # Weekend
+                    ])
+
+            # Add the label
+            label.append(1 if row[17] == "TRUE" else 0)
+    
+    return (evidence, label)
+
 
 
 def train_model(evidence, labels):
@@ -67,7 +113,13 @@ def train_model(evidence, labels):
     Given a list of evidence lists and a list of labels, return a
     fitted k-nearest neighbor model (k=1) trained on the data.
     """
-    raise NotImplementedError
+    # Create a model and set neighbors parameter to 1
+    model = KNeighborsClassifier(n_neighbors=1)
+    
+    # Run the training
+    model.fit(evidence, labels)
+
+    return model
 
 
 def evaluate(labels, predictions):
@@ -85,7 +137,33 @@ def evaluate(labels, predictions):
     representing the "true negative rate": the proportion of
     actual negative labels that were accurately identified.
     """
-    raise NotImplementedError
+    # Declare some counters and variables
+    id_positive = 0         # Number of positive correctly identified
+    id_negative = 0         # Number of positive correctly identified
+    counter_positive = 0    # Number of actual positive 
+    counter_negative = 0    # Number of actual negative
+
+    for i in range(len(labels)):
+        label = labels[i]
+        prediction = predictions[i]
+
+        # Handle True positive
+        if label == 1:
+            counter_positive += 1
+            if label == prediction:
+                id_positive += 1
+            
+        # Handle True Negative
+        else:
+            counter_negative += 1
+            if label == prediction:
+                id_negative += 1
+    
+    # Calculate sensitivity and specificity
+    sensitivity = id_positive / counter_positive
+    specificity = id_negative / counter_negative
+
+    return (sensitivity, specificity)
 
 
 if __name__ == "__main__":
