@@ -15,7 +15,8 @@
             "env": {"PYTHONPATH": "${workspaceRoot}"},
             "python.analysis.extraPaths": ["/Users/andrea/Documents/VStudio/CS50ai/crossword"],
             "args": [
-                "shopping.py", "shopping.csv",
+                "gtsrb-small", 
+                // "trained_model",
             ]
         }
     ]
