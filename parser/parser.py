@@ -72,16 +72,18 @@ def preprocess(sentence):
     # Create a list of tokens (1 token for 1 word)
     words_list = nltk.word_tokenize(sentence)
     wToRemove = []
+    # Loop through every word
     for word in words_list:
         isAlpha = False
+        # Check if there are alphabetic char in the word, otherwise flag the word to be removed
         for char in word:
             if char.isalpha():
                 isAlpha = True
                 break
         if not isAlpha:
             wToRemove.append(word)
+    # Clean the wordlist and return it
     words_list = [x for x in words_list if (x not in wToRemove)]
-    print(words_list)
     return words_list
 
 
@@ -92,11 +94,14 @@ def np_chunk(tree):
     whose label is "NP" that does not itself contain any other
     noun phrases as subtrees.
     """
-    # Esplodi ogni ramo dell'albero fino a che non trovi un NP, se dentro c'è un altro NP continua a esplodere, altrimenti aggiungi l'NP alla lista
+
     chunk = []
     isMainTree = True
+    # Loop through every subtree element
     for subtree in tree.subtrees():
+        # If the label of the subtree is NP, see if there is a "son" with NP, otherwise add it to the chunk list
         if subtree.label() == "NP":
+           # A trick to skip the first subtree (which is the main tree itself) 
             isMainTree = True
             hasNPsub = False
             for sub in subtree.subtrees():
@@ -104,10 +109,11 @@ def np_chunk(tree):
                     isMainTree = False
                 elif sub.label() == "NP":
                     hasNPsub = True
-
+            # If no subtree "leaves" with NP label is found, add the subtree to the chunk list
             if hasNPsub == False:
                 chunk.append(subtree)
                 
+    # Return the list           
     return chunk
 
 if __name__ == "__main__":
