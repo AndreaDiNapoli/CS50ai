@@ -14,10 +14,9 @@
             "cwd": "${fileDirname}",
             "env": {"PYTHONPATH": "${workspaceRoot}"},
             "python.analysis.extraPaths": ["/Users/andrea/Documents/VStudio/CS50ai/crossword"],
-/*             "args": [
-                "gtsrb", 
-                "trained_model.h5",
-            ] */
+            "args": [
+                "corpus"
+            ]
         }
     ]
 }
