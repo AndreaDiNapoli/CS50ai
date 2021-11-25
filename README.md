@@ -1,2 +1,2 @@
 ## CS50ai
-### Personal Github for CS50ai project and labs
+My code for the labs and problem sets of the CS50AI course.
